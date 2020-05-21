@@ -202,7 +202,7 @@ const HomePage = ({ initialPosition, ...props }) => {
           </Media>
         </section>
 
-        {Boolean(selectedLooId) && (
+        {Boolean(selectedLooId) && data && (
           <Box
             position="absolute"
             left={0}
@@ -211,7 +211,7 @@ const HomePage = ({ initialPosition, ...props }) => {
             zIndex={100}
           >
             <ToiletDetailsPanel
-              data={data && data.loo}
+              data={data.loo}
               isLoading={loading}
               onDimensionsChange={setToiletPanelDimensions}
             />
