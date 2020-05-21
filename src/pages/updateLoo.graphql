@@ -54,7 +54,7 @@ mutation updateLoo(
       }
       active
       opening
-      accessible
+      accessibleTimes
       allGender
       male
       female
