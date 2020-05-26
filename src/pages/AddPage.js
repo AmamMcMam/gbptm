@@ -15,7 +15,6 @@ import useMapPosition from '../components/useMapPosition';
 import useNearbyLoos from '../components/useNearbyLoos';
 
 import config from '../config';
-import graphqlMappings from '../graphqlMappings';
 import history from '../history';
 
 const UPDATE_LOO = loader('./updateLoo.graphql');
@@ -26,8 +25,6 @@ const initialFormState = {
 };
 
 const AddPage = (props) => {
-  const optionsMap = graphqlMappings.looProps.definitions;
-
   const [mapPosition, setMapPosition] = useMapPosition();
 
   const { data } = useNearbyLoos({
@@ -106,7 +103,6 @@ const AddPage = (props) => {
         saveLoading={saveLoading}
         saveResponse={saveResponse}
         saveError={saveError}
-        optionsMap={optionsMap}
         onSubmit={save}
       >
         <Box display="flex" flexDirection="column" alignItems="center">

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 
 import Box from './Box';
@@ -6,7 +7,7 @@ import Text from './Text';
 import Icon from './Icon';
 import Spacer from './Spacer';
 
-const Notification = ({ children }) => {
+const Notification = ({ allowClose, children }) => {
   const [isVisible, setIsVisible] = useState(true);
 
   if (!isVisible) {
@@ -28,17 +29,25 @@ const Notification = ({ children }) => {
         {children}
       </Text>
 
-      <Spacer ml={2} />
+      {allowClose && (
+        <>
+          <Spacer ml={2} />
 
-      <button
-        type="button"
-        aria-label="Close notification"
-        onClick={() => setIsVisible(false)}
-      >
-        <Icon icon={faTimes} />
-      </button>
+          <button
+            type="button"
+            aria-label="Close notification"
+            onClick={() => setIsVisible(false)}
+          >
+            <Icon icon={faTimes} />
+          </button>
+        </>
+      )}
     </Box>
   );
+};
+
+Notification.propTypes = {
+  allowClose: PropTypes.bool,
 };
 
 export default Notification;

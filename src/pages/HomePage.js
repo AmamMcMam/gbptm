@@ -26,11 +26,6 @@ import config, { FILTERS_KEY } from '../config';
 
 const FIND_BY_ID = loader('./findLooById.graphql');
 
-const messageMap = {
-  created: 'Thank you, toilet added!',
-  updated: 'Thank you, details updated!',
-};
-
 const HomePage = ({ initialPosition, ...props }) => {
   const [mapPosition, setMapPosition] = useMapPosition(config.fallbackLocation);
   const [isFiltersExpanded, setIsFiltersExpanded] = useState(false);
@@ -133,13 +128,7 @@ const HomePage = ({ initialPosition, ...props }) => {
 
         <Media lessThan="md">
           <section>
-            <Box
-              position="absolute"
-              top={0}
-              left={0}
-              p={3}
-              width="100%"
-            >
+            <Box position="absolute" top={0} left={0} p={3} width="100%">
               <LocationSearch
                 onSelectedItemChange={(center) => setMapPosition({ center })}
               />
@@ -225,9 +214,20 @@ const HomePage = ({ initialPosition, ...props }) => {
               startExpanded={!!message}
               onDimensionsChange={setToiletPanelDimensions}
             >
-              {messageMap[message] && (
-                <Box display="flex" justifyContent="center" mt={3}>
-                  <Notification children={messageMap[message]} />
+              {config.messages[message] && (
+                <Box
+                  position="absolute"
+                  left={0}
+                  right={0}
+                  bottom={0}
+                  display="flex"
+                  justifyContent="center"
+                  p={4}
+                  pt={1}
+                  pb={[4, 3, 4]}
+                  bg={['white', 'white', 'transparent']}
+                >
+                  <Notification children={config.messages[message]} />
                 </Box>
               )}
             </ToiletDetailsPanel>

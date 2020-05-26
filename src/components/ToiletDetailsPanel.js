@@ -27,17 +27,13 @@ import Text from './Text';
 import Spacer from './Spacer';
 import Icon from './Icon';
 import { Media } from './Media';
-import {
-  getOpeningTimes,
-  getIsOpen,
-  WEEKDAYS,
-  rangeTypes,
-} from '../openingHours';
+import { getIsOpen, WEEKDAYS, rangeTypes } from '../openingTimes';
 
 const Grid = styled(Box)`
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
+  justify-content: center;
   margin: -${({ theme }) => theme.space[3]}px;
 `;
 
@@ -50,7 +46,11 @@ function getTimeRangeLabel(range) {
     return 'Closed';
   }
 
-  if (range.length === 2) {
+  if (range && range.length === 2) {
+    if (range[0] === range[1]) {
+      return '24 Hours';
+    }
+
     return range.join(' - ');
   }
 
@@ -78,7 +78,13 @@ const SUBMIT_VERIFICATION_REPORT_MUTATION = gql`
   }
 `;
 
-const ToiletDetailsPanel = ({ data, isLoading, onDimensionsChange, startExpanded = false, children }) => {
+const ToiletDetailsPanel = ({
+  data,
+  isLoading,
+  onDimensionsChange,
+  startExpanded = false,
+  children,
+}) => {
   const [isExpanded, setIsExpanded] = React.useState(startExpanded);
 
   const [
@@ -190,7 +196,8 @@ const ToiletDetailsPanel = ({ data, isLoading, onDimensionsChange, startExpanded
     },
   ];
 
-  const openingTimes = getOpeningTimes(data.openingTimes);
+  const openingTimes = data.openingTimes || WEEKDAYS.map(() => null);
+
   const todayWeekdayIndex = DateTime.local().weekday - 1;
 
   const editUrl = `/loos/${data.id}/edit`;
@@ -399,9 +406,7 @@ const ToiletDetailsPanel = ({ data, isLoading, onDimensionsChange, startExpanded
               )}
             </Box>
 
-            <Media
-              lessThan="md"
-            >
+            <Media lessThan="md">
               <Box
                 display="flex"
                 justifyContent="center"

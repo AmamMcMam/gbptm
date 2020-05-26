@@ -7,7 +7,7 @@ import omit from 'lodash/omit';
 import pick from 'lodash/pick';
 
 import Container from '../components/Container';
-import Loading from '../components/Loading';
+import Notification from '../components/Notification';
 import Box from '../components/Box';
 import Text from '../components/Text';
 import Spacer from '../components/Spacer';
@@ -171,16 +171,7 @@ const Section = ({ register, id, title, questions, children }) => (
   </div>
 );
 
-const EntryForm = ({
-  title,
-  loo,
-  center,
-  optionsMap,
-  saveResponse,
-  saveError,
-  children,
-  ...props
-}) => {
+const EntryForm = ({ title, loo, center, children, ...props }) => {
   const [noPayment, setNoPayment] = useState(loo.noPayment);
   const { register, handleSubmit, formState, setValue } = useForm();
 
@@ -463,13 +454,21 @@ const EntryForm = ({
             </label>
           </VisuallyHidden>
 
-          {props.saveLoading && <Loading message="Saving your changes..." />}
-
           <Spacer mt={4} />
 
           {isFunction(children)
             ? children({ hasDirtyFields: dirtyFields.size })
             : children}
+
+          <Spacer mt={4} />
+
+          {props.saveLoading && (
+            <Box maxWidth={360} mx="auto">
+              <Notification allowClose>
+                Saving your changes&hellip;
+              </Notification>
+            </Box>
+          )}
         </form>
       </Text>
     </Container>
@@ -491,17 +490,7 @@ EntryForm.propTypes = {
     lat: PropTypes.number.isRequired,
     lng: PropTypes.number.isRequired,
   }).isRequired,
-  optionsMap: PropTypes.shape({
-    opening: PropTypes.arrayOf(
-      PropTypes.shape({
-        name: PropTypes.string.isRequired,
-        value: PropTypes.string,
-      })
-    ).isRequired,
-  }).isRequired,
   saveLoading: PropTypes.bool,
-  saveError: PropTypes.object,
-  saveResponse: PropTypes.object,
 };
 
 EntryForm.defaultProps = {
