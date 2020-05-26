@@ -16,6 +16,7 @@ import useNearbyLoos from '../components/useNearbyLoos';
 
 import config from '../config';
 import graphqlMappings from '../graphqlMappings';
+import history from '../history';
 
 const UPDATE_LOO = loader('./updateLoo.graphql');
 
@@ -58,6 +59,11 @@ const AddPage = (props) => {
 
   if (saveError) {
     console.error('saving', saveError);
+  }
+
+  // redirect to new toilet entry page on successful addition
+  if (saveResponse && saveResponse.submitReport.code === '200') {
+    history.push(`/loos/${saveResponse.submitReport.loo.id}?message=created`);
   }
 
   const save = (data) => {

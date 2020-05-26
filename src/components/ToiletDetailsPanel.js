@@ -78,8 +78,8 @@ const SUBMIT_VERIFICATION_REPORT_MUTATION = gql`
   }
 `;
 
-const ToiletDetailsPanel = ({ data, isLoading, onDimensionsChange }) => {
-  const [isExpanded, setIsExpanded] = React.useState(false);
+const ToiletDetailsPanel = ({ data, isLoading, onDimensionsChange, startExpanded = false, children }) => {
+  const [isExpanded, setIsExpanded] = React.useState(startExpanded);
 
   const [
     submitVerificationReport,
@@ -372,6 +372,7 @@ const ToiletDetailsPanel = ({ data, isLoading, onDimensionsChange }) => {
                 ))}
               </UnstyledList>
             </Box>
+
             <Box width={['100%', '50%', '25%']} padding={3}>
               {data.noPayment === false && (
                 <>
@@ -400,9 +401,6 @@ const ToiletDetailsPanel = ({ data, isLoading, onDimensionsChange }) => {
 
             <Media
               lessThan="md"
-              css={css`
-                width: 100%;
-              `}
             >
               <Box
                 display="flex"
@@ -417,6 +415,8 @@ const ToiletDetailsPanel = ({ data, isLoading, onDimensionsChange }) => {
               </Box>
             </Media>
           </Grid>
+
+          {children}
         </Box>
       </Box>
     );
