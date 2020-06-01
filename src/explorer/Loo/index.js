@@ -42,7 +42,7 @@ function Loo(props) {
                 </Typography>
               ))
             : null}
-          {auth.isAuthenticated() && (
+          {auth.isAuthenticated && (
             <div>
               <RaisedButton
                 variant="contained"

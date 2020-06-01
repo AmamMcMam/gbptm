@@ -8,7 +8,6 @@ import ReactDOM from 'react-dom';
 import { Route, Switch, Redirect } from 'react-router-dom';
 
 import ProtectedRoute from './components/ProtectedRoute';
-import AuthCallback from './pages/AuthCallback';
 import RemovePage from './pages/RemovePage';
 import HomePage from './pages/HomePage';
 import AboutPage from './pages/AboutPage';
@@ -27,13 +26,22 @@ import PageLoading from './components/PageLoading';
 import history from './history';
 import Router from './Router';
 import AuthProvider from './Auth';
-import App from './App';
+import ApolloProvider from './Apollo';
 
 const Explorer = lazy(() => import('./explorer'));
 
+const CLIENT_ID = 'sUts4RKy04JcyZ2IVFgMAC0rhPARCQYg';
+
 ReactDOM.render(
-  <AuthProvider>
-    <App>
+  <AuthProvider
+    domain="gbptm.eu.auth0.com"
+    client_id={CLIENT_ID}
+    redirect_uri={`${window.location.origin}/callback`}
+    cacheLocation="localstorage"
+    audience="https://www.toiletmap.org.uk/graphql"
+    scope="openid profile report:loo"
+  >
+    <ApolloProvider>
       <Router history={history} forceRefresh={false}>
         <Tracking />
         <Suspense fallback={<PageLoading />}>
@@ -61,7 +69,7 @@ ReactDOM.render(
             <Route
               exact
               path="/callback"
-              render={(props) => <AuthCallback {...props} />}
+              render={(props) => <PageLoading {...props} />}
             />
             <Route
               path="/explorer"
@@ -73,7 +81,7 @@ ReactDOM.render(
           </Switch>
         </Suspense>
       </Router>
-    </App>
+    </ApolloProvider>
   </AuthProvider>,
   document.getElementById('root')
 );

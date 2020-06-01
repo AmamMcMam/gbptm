@@ -43,7 +43,7 @@ const LoginPage = (props) => {
           To add or edit a public toilet you will first need to Log in or Sign
           Up:
           <Spacer mb={3} />
-          <Button onClick={auth.login}>Log In/Sign Up</Button>
+          <Button onClick={auth.loginWithRedirect}>Log In/Sign Up</Button>
         </p>
         <Spacer mb={4} />
         <Text fontSize={3} fontWeight="bold">

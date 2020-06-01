@@ -44,16 +44,20 @@ const httpLink = new HttpLink({
   uri: process.env.REACT_APP_BAKED_BACKEND || '/api',
 });
 
-const App = (props) => {
+const CustomApolloProvider = (props) => {
   const auth = useAuth();
 
-  const authLink = setContext((_, { headers }) => {
+  const authLink = setContext(async (_, { headers }) => {
+    if (!auth.isAuthenticated) {
+      return headers;
+    }
+
+    const token = await auth.getTokenSilently();
+
     return {
       headers: {
         ...headers,
-        authorization: auth.isAuthenticated()
-          ? `Bearer ${auth.getAccessToken()}`
-          : '',
+        authorization: `Bearer ${token}`,
       },
     };
   });
@@ -69,8 +73,6 @@ const App = (props) => {
 
   // set the initial cache state
   function writeInitialState() {
-    const isAuthenticated = auth.isAuthenticated();
-
     cache.writeQuery({
       query: gql`
         query {
@@ -99,11 +101,11 @@ const App = (props) => {
           lng: 0,
         },
         geolocation: null,
-        userData: {
-          __typename: 'UserData',
-          loggedIn: isAuthenticated,
-          name: isAuthenticated ? auth.getProfile().name : null,
-        },
+        // userData: {
+        //   __typename: 'UserData',
+        //   loggedIn: auth.isAuthenticated,
+        //   name: auth.getProfile().name : null,
+        // },
       },
     });
   }
@@ -116,4 +118,4 @@ const App = (props) => {
   return <ApolloProvider client={client} children={props.children} />;
 };
 
-export default App;
+export default CustomApolloProvider;

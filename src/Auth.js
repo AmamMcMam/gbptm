@@ -1,152 +1,93 @@
-import { createContext, useContext } from 'react';
-import auth0 from 'auth0-js';
+import React, { useState, useEffect, useContext } from 'react';
+import createAuth0Client from '@auth0/auth0-spa-js';
+
 import history from './history';
-import isFunction from 'lodash/isFunction';
 
-const CLIENT_ID = 'sUts4RKy04JcyZ2IVFgMAC0rhPARCQYg';
+const PERMISSIONS_STORAGE_KEY = 'https://toiletmap.org.uk/permissions';
 
-const permissionsKey = 'https://toiletmap.org.uk/permissions';
-
-const options = {
-  domain: 'gbptm.eu.auth0.com',
-  responseType: 'token id_token',
-  audience: 'https://www.toiletmap.org.uk/graphql',
-  scope: 'openid profile report:loo',
+const redirectOnNextLogin = (location) => {
+  localStorage.setItem('redirectOnLogin', JSON.stringify(location));
 };
 
-const makeAuth = () => {
-  return new auth0.WebAuth({
-    ...options,
-    clientID: CLIENT_ID, // web client id from auth0
-    redirectUri: `${window.location.origin}/callback`,
-  });
+const onRedirectCallback = () => {
+  const redirectTo = JSON.parse(localStorage.getItem('redirectOnLogin'));
+  history.replace(redirectTo || '/');
 };
 
-class Auth {
-  auth0 = makeAuth();
+export const AuthContext = React.createContext();
+export const useAuth = () => useContext(AuthContext);
 
-  handleAuthentication = () =>
-    new Promise((resolve, reject) => {
-      this.auth0.parseHash((err, authResult) => {
-        if (err) {
-          reject(err);
-          return;
-        }
+const AuthProvider = ({ children, ...props }) => {
+  const [isAuthenticated, setIsAuthenticated] = useState();
+  const [user, setUser] = useState();
+  const [auth0Client, setAuth0] = useState();
+  const [loading, setLoading] = useState(true);
 
-        this.setSession(authResult);
-        resolve();
-      });
-    });
+  useEffect(() => {
+    const initAuth0 = async () => {
+      const auth0FromHook = await createAuth0Client(props);
+      setAuth0(auth0FromHook);
 
-  setSession = (authResult) => {
-    if (!authResult) {
-      return;
-    }
-    // Set the time that the Access Token will expire at
-    let expiresAt = JSON.stringify(
-      authResult.expiresIn * 1000 + new Date().getTime()
-    );
-    localStorage.setItem('access_token', authResult.accessToken);
-    localStorage.setItem('id_token', authResult.idToken);
-    localStorage.setItem('expires_at', expiresAt);
-    localStorage.setItem('nickname', authResult.idTokenPayload.nickname);
-    localStorage.setItem(
-      'permissions',
-      JSON.stringify(authResult.idTokenPayload[permissionsKey])
-    );
-  };
+      if (
+        window.location.search.includes('code=') &&
+        window.location.search.includes('state=')
+      ) {
+        const { appState } = await auth0FromHook.handleRedirectCallback();
+        onRedirectCallback(appState);
+      }
 
-  getAccessToken = () => {
-    const accessToken = localStorage.getItem('access_token');
-    if (!accessToken) {
-      throw new Error('No access token found');
-    }
-    return accessToken;
-  };
+      const isAuthenticated = await auth0FromHook.isAuthenticated();
 
-  fetchProfile = () =>
-    new Promise((resolve, reject) => {
-      const accessToken = this.getAccessToken();
-      this.auth0.client.userInfo(accessToken, (err, profile) => {
-        if (profile) {
-          localStorage.setItem('name', profile.name);
-          resolve(profile);
-        } else if (err) {
-          reject(err);
-        }
-      });
-    });
+      setIsAuthenticated(isAuthenticated);
 
-  getProfile = () => {
-    return {
-      name: localStorage.getItem('name'),
+      if (isAuthenticated) {
+        const user = await auth0FromHook.getUser();
+        setUser(user);
+      }
+
+      setLoading(false);
     };
+    initAuth0();
+    // eslint-disable-next-line
+  }, []);
+
+  const handleRedirectCallback = async () => {
+    setLoading(true);
+    await auth0Client.handleRedirectCallback();
+    const user = await auth0Client.getUser();
+    setLoading(false);
+    setIsAuthenticated(true);
+    setUser(user);
   };
 
-  redirectOnNextLogin = (location) => {
-    localStorage.setItem('redirectOnLogin', JSON.stringify(location));
+  const checkPermission = (permissionType) => {
+    const permissions = user[PERMISSIONS_STORAGE_KEY] || [];
+    return permissions.includes(permissionType);
   };
 
-  redirectOnLogin = () => {
-    return JSON.parse(localStorage.getItem('redirectOnLogin'));
-  };
-
-  login = () => {
-    this.auth0.authorize();
-  };
-
-  logout = () => {
-    // Clear Access Token and ID Token from local storage also the cached email
-    localStorage.removeItem('name');
-    localStorage.removeItem('nickname');
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('id_token');
-    localStorage.removeItem('expires_at');
-    localStorage.removeItem('permissions');
-
-    // navigate to the home route
-    history.replace('/');
-  };
-
-  isAuthenticated = () => {
-    // Check whether the current time is past the
-    // Access Token's expiry time
-    let expiresAt = JSON.parse(localStorage.getItem('expires_at'));
-    return new Date().getTime() < expiresAt;
-  };
-
-  getPermissions() {
-    return JSON.parse(localStorage.getItem('permissions') || '[]');
-  }
-
-  checkPermission(perm) {
-    return this.getPermissions().includes(perm);
-  }
-
-  reactContextLogin = () => {
-    this.login();
-    return;
-  };
-
-  reactContextLogout = (logoutMutation, history) => {
-    this.logout();
-    logoutMutation();
-    history.push('/');
-  };
-}
-
-export const AuthContext = createContext(new Auth());
-
-const AuthProvider = ({ children }) => {
-  const auth = useContext(AuthContext);
-
-  return isFunction(children) ? children(auth) : children;
-};
-
-export const useAuth = () => {
-  const auth = useContext(AuthContext);
-
-  return auth;
+  return (
+    <AuthContext.Provider
+      value={{
+        isAuthenticated,
+        user,
+        loading,
+        redirectOnNextLogin,
+        handleRedirectCallback,
+        checkPermission,
+        loginWithRedirect: (...p) => auth0Client.loginWithRedirect(...p),
+        getTokenSilently: (...p) => auth0Client.getTokenSilently(...p),
+        logout: (...p) =>
+          auth0Client.logout(
+            {
+              returnTo: window.location.origin,
+            },
+            ...p
+          ),
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
 };
 
 export default AuthProvider;

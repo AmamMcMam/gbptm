@@ -6,11 +6,15 @@ import { useAuth } from '../Auth';
 const ProtectedRoute = ({ component: Component, injectProps, ...rest }) => {
   const auth = useAuth();
 
+  if (auth.loading) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <Route
       {...rest}
       render={(props) => {
-        if (auth.isAuthenticated()) {
+        if (auth.isAuthenticated) {
           return <Component {...props} {...injectProps} />;
         } else {
           auth.redirectOnNextLogin(props.location);

@@ -14,13 +14,14 @@ import ListItemText from '@material-ui/core/ListItemText';
 import StatsIcon from '@material-ui/icons/Assessment';
 import SearchIcon from '@material-ui/icons/Search';
 
-import { Link, useRouteMatch } from 'react-router-dom';
+import { Link, useRouteMatch, useLocation } from 'react-router-dom';
 
 import { useAuth } from '../Auth';
 
 function Layout(props) {
   const auth = useAuth();
   const match = useRouteMatch();
+  const location = useLocation();
   const [isDrawerOpen, setDrawerOpen] = useState(false);
 
   return (
@@ -37,12 +38,18 @@ function Layout(props) {
           <Typography variant="h6" color="inherit" style={{ flex: 1 }}>
             Toilet Map Explorer
           </Typography>
-          {auth.isAuthenticated() ? (
+          {auth.isAuthenticated ? (
             <Button onClick={auth.logout} color="inherit">
               Logout
             </Button>
           ) : (
-            <Button onClick={auth.login} color="inherit">
+            <Button
+              onClick={() => {
+                auth.redirectOnNextLogin(location);
+                auth.loginWithRedirect();
+              }}
+              color="inherit"
+            >
               Login
             </Button>
           )}

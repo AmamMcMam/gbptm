@@ -13,6 +13,8 @@ import config from '../config';
 
 import { TRACKING_STORAGE_KEY } from './Tracking';
 
+import { useAuth } from '../Auth';
+
 import 'leaflet/dist/leaflet.css';
 import 'leaflet-control-geocoder/dist/Control.Geocoder.css';
 import 'leaflet-loading/src/Control.Loading.css';
@@ -188,6 +190,8 @@ const ResetStyles = (
 const PageLayout = ({ mapCenter, children }) => {
   const trackingRef = useRef(null);
 
+  const auth = useAuth();
+
   const [isTrackingStateChosen, setIsTrackingStateChosen] = useState(
     config.getSetting(TRACKING_STORAGE_KEY, 'trackingStateChosen')
   );
@@ -231,6 +235,12 @@ const PageLayout = ({ mapCenter, children }) => {
 
         <Box display="flex" flexDirection="column" height="100%">
           <Header mapCenter={mapCenter}>{footerFragment}</Header>
+
+          {auth.isAuthenticated && (
+            <button type="button" onClick={auth.logout}>
+              logout
+            </button>
+          )}
 
           <Box position="relative" display="flex" flexGrow={1} overflowY="auto">
             <Box
