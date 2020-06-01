@@ -86,10 +86,6 @@ const CustomApolloProvider = (props) => {
             lat
             lng
           }
-          userData {
-            loggedIn
-            name
-          }
         }
       `,
       data: {
@@ -101,11 +97,6 @@ const CustomApolloProvider = (props) => {
           lng: 0,
         },
         geolocation: null,
-        // userData: {
-        //   __typename: 'UserData',
-        //   loggedIn: auth.isAuthenticated,
-        //   name: auth.getProfile().name : null,
-        // },
       },
     });
   }

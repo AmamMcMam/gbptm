@@ -2,12 +2,13 @@ import React from 'react';
 import { Route, Redirect } from 'react-router-dom';
 
 import { useAuth } from '../Auth';
+import PageLoading from './PageLoading';
 
 const ProtectedRoute = ({ component: Component, injectProps, ...rest }) => {
   const auth = useAuth();
 
   if (auth.loading) {
-    return <div>Loading...</div>;
+    return <PageLoading />;
   }
 
   return (

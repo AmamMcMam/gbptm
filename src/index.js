@@ -8,12 +8,9 @@ import ReactDOM from 'react-dom';
 import { Route, Switch, Redirect } from 'react-router-dom';
 
 import ProtectedRoute from './components/ProtectedRoute';
-import RemovePage from './pages/RemovePage';
 import HomePage from './pages/HomePage';
 import AboutPage from './pages/AboutPage';
 import ContactPage from './pages/ContactPage';
-import AddPage from './pages/AddPage';
-import EditPage from './pages/EditPage';
 import ContributePage from './pages/ContributePage';
 import MapPage from './pages/MapPage';
 import UseOurLoosPage from './pages/UseOurLoosPage';
@@ -28,7 +25,18 @@ import Router from './Router';
 import AuthProvider from './Auth';
 import ApolloProvider from './Apollo';
 
-const Explorer = lazy(() => import('./explorer'));
+const Explorer = lazy(() =>
+  import(/*webpackChunkName: 'explorer'*/ './explorer')
+);
+const AddPage = lazy(() =>
+  import(/*webpackChunkName: 'add'*/ './pages/AddPage')
+);
+const EditPage = lazy(() =>
+  import(/*webpackChunkName: 'edit'*/ './pages/EditPage')
+);
+const RemovePage = lazy(() =>
+  import(/*webpackChunkName: 'remove'*/ './pages/RemovePage')
+);
 
 const CLIENT_ID = 'sUts4RKy04JcyZ2IVFgMAC0rhPARCQYg';
 
