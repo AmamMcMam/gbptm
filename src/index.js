@@ -38,17 +38,8 @@ const RemovePage = lazy(() =>
   import(/*webpackChunkName: 'remove'*/ './pages/RemovePage')
 );
 
-const CLIENT_ID = 'sUts4RKy04JcyZ2IVFgMAC0rhPARCQYg';
-
 ReactDOM.render(
-  <AuthProvider
-    domain="gbptm.eu.auth0.com"
-    client_id={CLIENT_ID}
-    redirect_uri={`${window.location.origin}/callback`}
-    cacheLocation="localstorage"
-    audience="https://www.toiletmap.org.uk/graphql"
-    scope="openid profile report:loo"
-  >
+  <AuthProvider>
     <ApolloProvider>
       <Router history={history} forceRefresh={false}>
         <Tracking />
