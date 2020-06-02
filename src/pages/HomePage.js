@@ -11,12 +11,17 @@ import LooMap from '../components/LooMap';
 import useMapPosition from '../components/useMapPosition';
 import useNearbyLoos from '../components/useNearbyLoos';
 import Box from '../components/Box';
-import ToiletDetailsPanel from '../components/ToiletDetailsPanel';
-import Sidebar from '../components/Sidebar';
+// import Sidebar from '../components/Sidebar';
 import Notification from '../components/Notification';
 import VisuallyHidden from '../components/VisuallyHidden';
 
 import config, { FILTERS_KEY } from '../config';
+
+const ToiletDetailsPanel = React.lazy(() =>
+  import('../components/ToiletDetailsPanel')
+);
+
+const Sidebar = React.lazy(() => import('../components/Sidebar'));
 
 const FIND_BY_ID = loader('./findLooById.graphql');
 
@@ -105,91 +110,93 @@ const HomePage = ({ initialPosition, ...props }) => {
 
   return (
     <PageLayout mapCenter={mapPosition.center}>
-      <Helmet>
-        <title>{pageTitle}</title>
-      </Helmet>
+      <React.Suspense fallback={null}>
+        <Helmet>
+          <title>{pageTitle}</title>
+        </Helmet>
 
-      <VisuallyHidden>
-        <h1>{pageTitle}</h1>
-      </VisuallyHidden>
+        <VisuallyHidden>
+          <h1>{pageTitle}</h1>
+        </VisuallyHidden>
 
-      <Box height="100%" display="flex" position="relative">
-        <Box
-          position="absolute"
-          zIndex={1}
-          top={0}
-          left={[0, 3]}
-          right={0}
-          bottom={0}
-          m={3}
-          maxWidth={326}
-          maxHeight="100%"
-          overflowY="auto"
-          // center on small viewports
-          mx={['auto', 0]}
-        >
-          <Sidebar
-            filters={filters}
-            onFilterChange={setFilters}
-            onSelectedItemChange={(center) => setMapPosition({ center })}
-            onUpdateMapPosition={setMapPosition}
-            mapCenter={mapPosition.center}
-          />
-        </Box>
-
-        <LooMap
-          loos={toilets.map((toilet) => {
-            if (toilet.id === selectedLooId) {
-              return {
-                ...toilet,
-                isHighlighted: true,
-              };
-            }
-            return toilet;
-          })}
-          center={mapPosition.center}
-          zoom={mapPosition.zoom}
-          onViewportChanged={setMapPosition}
-          controlsOffset={toiletPanelDimensions.height}
-        />
-
-        {Boolean(selectedLooId) && data && (
+        <Box height="100%" display="flex" position="relative">
           <Box
             position="absolute"
-            left={0}
+            zIndex={1}
+            top={0}
+            left={[0, 3]}
+            right={0}
             bottom={0}
-            width="100%"
-            zIndex={100}
+            m={3}
+            maxWidth={326}
+            maxHeight="100%"
+            overflowY="auto"
+            // center on small viewports
+            mx={['auto', 0]}
           >
-            <ToiletDetailsPanel
-              data={data.loo}
-              isLoading={loading}
-              startExpanded={!!message}
-              onDimensionsChange={setToiletPanelDimensions}
-            >
-              {config.messages[message] && (
-                <Box
-                  position="absolute"
-                  left={0}
-                  right={0}
-                  bottom={0}
-                  display="flex"
-                  justifyContent="center"
-                  p={4}
-                  pt={1}
-                  pb={[4, 3, 4]}
-                  bg={['white', 'white', 'transparent']}
-                >
-                  <Notification
-                    allowClose
-                    children={config.messages[message]}
-                  />
-                </Box>
-              )}
-            </ToiletDetailsPanel>
+            <Sidebar
+              filters={filters}
+              onFilterChange={setFilters}
+              onSelectedItemChange={(center) => setMapPosition({ center })}
+              onUpdateMapPosition={setMapPosition}
+              mapCenter={mapPosition.center}
+            />
           </Box>
-        )}
-      </Box>
+
+          <LooMap
+            loos={toilets.map((toilet) => {
+              if (toilet.id === selectedLooId) {
+                return {
+                  ...toilet,
+                  isHighlighted: true,
+                };
+              }
+              return toilet;
+            })}
+            center={mapPosition.center}
+            zoom={mapPosition.zoom}
+            onViewportChanged={setMapPosition}
+            controlsOffset={toiletPanelDimensions.height}
+          />
+
+          {Boolean(selectedLooId) && data && (
+            <Box
+              position="absolute"
+              left={0}
+              bottom={0}
+              width="100%"
+              zIndex={100}
+            >
+              <ToiletDetailsPanel
+                data={data.loo}
+                isLoading={loading}
+                startExpanded={!!message}
+                onDimensionsChange={setToiletPanelDimensions}
+              >
+                {config.messages[message] && (
+                  <Box
+                    position="absolute"
+                    left={0}
+                    right={0}
+                    bottom={0}
+                    display="flex"
+                    justifyContent="center"
+                    p={4}
+                    pt={1}
+                    pb={[4, 3, 4]}
+                    bg={['white', 'white', 'transparent']}
+                  >
+                    <Notification
+                      allowClose
+                      children={config.messages[message]}
+                    />
+                  </Box>
+                )}
+              </ToiletDetailsPanel>
+            </Box>
+          )}
+        </Box>
+      </React.Suspense>
     </PageLayout>
   );
 };
