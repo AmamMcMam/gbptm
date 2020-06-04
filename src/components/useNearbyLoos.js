@@ -19,10 +19,11 @@ const NEARBY_LOOS_QUERY = gql`
   }
 `;
 
-const useNearbyLoos = ({ variables, skip }) => {
+const useNearbyLoos = ({ variables, skip, ssr }) => {
   const { loading, data, error } = useQuery(NEARBY_LOOS_QUERY, {
     variables,
     skip,
+    ssr,
   });
 
   return {

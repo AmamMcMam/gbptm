@@ -19,7 +19,7 @@ import { faAccessibleIcon } from '@fortawesome/free-brands-svg-icons';
 import lightFormat from 'date-fns/lightFormat';
 import getISODay from 'date-fns/getISODay';
 import parseISO from 'date-fns/parseISO';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import { useMutation, useQuery, gql } from '@apollo/client';
 import useComponentSize from '@rehooks/component-size';
 import L from 'leaflet';
@@ -350,7 +350,7 @@ const ToiletDetailsPanel = ({
                     variant="secondary"
                     icon={<Icon icon={faEdit} />}
                     as={Link}
-                    to={editUrl}
+                    href={editUrl}
                   >
                     Edit
                   </Button>
@@ -389,7 +389,7 @@ const ToiletDetailsPanel = ({
               <Text fontSize={1} color="grey">
                 Hours may vary with national holidays or seasonal changes. If
                 you know these hours to be out of date please{' '}
-                <Button as={Link} to={editUrl} variant="link">
+                <Button as={Link} href={editUrl} variant="link">
                   edit this toilet
                 </Button>
                 .

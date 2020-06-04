@@ -1,6 +1,5 @@
 import React from 'react';
 import auth0 from 'auth0-js';
-import history from './history';
 
 const CLIENT_ID = 'sUts4RKy04JcyZ2IVFgMAC0rhPARCQYg';
 const permissionsKey = 'https://toiletmap.org.uk/permissions';
@@ -47,7 +46,7 @@ const logout = () => {
   localStorage.removeItem('permissions');
 
   // navigate to the home route
-  history.push('/');
+  // history.push('/');
 };
 
 const checkPermission = (perm) => {

@@ -33,7 +33,9 @@ const SET_MAP_POSITION = gql`
  */
 
 const useMapPosition = (fallbackLocation) => {
-  const { data } = useQuery(MAP_POSITION_QUERY);
+  const { data, loading } = useQuery(MAP_POSITION_QUERY, {
+    ssr: false,
+  });
 
   const [setMapPositionMutation] = useMutation(SET_MAP_POSITION);
 
@@ -53,24 +55,28 @@ const useMapPosition = (fallbackLocation) => {
   );
 
   const getMapCenter = React.useMemo(() => {
-    if (fallbackLocation) {
-      if (data.mapCenter.lat && data.mapCenter.lng) {
-        return data.mapCenter;
-      }
+    return fallbackLocation;
+    // if (fallbackLocation) {
+    //   if (data.mapCenter.lat && data.mapCenter.lng) {
+    //     return data.mapCenter;
+    //   }
 
-      return fallbackLocation;
-    }
+    //   return fallbackLocation;
+    // }
 
-    return data.mapCenter;
-  }, [fallbackLocation, data.mapCenter]);
+    // return data.mapCenter;
+  }, [fallbackLocation]);
+
+  console.log(data, loading);
 
   return [
     {
-      center: getMapCenter,
-      zoom: data.mapZoom,
-      radius: data.mapRadius,
+      center: fallbackLocation,
+      zoom: data?.mapZoom,
+      radius: data?.mapRadius,
     },
     setMapPosition,
+    loading,
   ];
 };
 

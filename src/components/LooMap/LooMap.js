@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { useHistory } from 'react-router-dom';
+import { useRouter } from 'next/router';
 import { css } from '@emotion/core';
 import { Map, TileLayer, ZoomControl } from 'react-leaflet';
 import 'focus-visible';
@@ -16,8 +16,6 @@ import Marker from './Marker';
 import VisuallyHidden from '../VisuallyHidden';
 
 import crosshair from '../../images/crosshair.svg';
-
-import 'leaflet/dist/leaflet.css';
 
 const KEY_ENTER = 13;
 
@@ -67,7 +65,7 @@ const LooMap = ({
     });
   };
 
-  const { push } = useHistory();
+  const { push } = useRouter();
 
   const memoizedMarkers = React.useMemo(
     () =>

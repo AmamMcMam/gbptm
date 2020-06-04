@@ -14,7 +14,9 @@ import ListItemText from '@material-ui/core/ListItemText';
 import StatsIcon from '@material-ui/icons/Assessment';
 import SearchIcon from '@material-ui/icons/Search';
 
-import { Link, useRouteMatch } from 'react-router-dom';
+import { useRouteMatch } from 'react-router-dom';
+
+import Link from 'next/link';
 
 import { useAuth } from '../Auth';
 
@@ -58,7 +60,7 @@ function Layout(props) {
           <div>
             <List>
               <ListItem button>
-                <Link to={`${match.path}/statistics`}>
+                <Link href={`${match.path}/statistics`}>
                   <ListItemIcon>
                     <StatsIcon />
                   </ListItemIcon>
@@ -66,7 +68,7 @@ function Layout(props) {
                 </Link>
               </ListItem>
               <ListItem button>
-                <Link to={`${match.path}/areas`}>
+                <Link href={`${match.path}/areas`}>
                   <ListItemIcon>
                     <StatsIcon />
                   </ListItemIcon>
@@ -74,7 +76,7 @@ function Layout(props) {
                 </Link>
               </ListItem>
               <ListItem button>
-                <Link to={`${match.path}/search`}>
+                <Link href={`${match.path}/search`}>
                   <ListItemIcon>
                     <SearchIcon />
                   </ListItemIcon>

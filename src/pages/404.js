@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 
 import PageLayout from '../components/PageLayout';
 import Box from '../components/Box';
@@ -34,7 +34,7 @@ const NotFound = () => (
 
         <Spacer mt={4} />
 
-        <Button as={Link} to="/">
+        <Button as={Link} href="/">
           Take me back home!
         </Button>
       </div>

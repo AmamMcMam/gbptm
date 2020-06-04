@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import { Helmet } from 'react-helmet';
 
 import PageLayout from '../components/PageLayout';
@@ -33,7 +33,7 @@ const CookiesPage = () => (
       </p>
       <p>
         For more detailed information about the cookies we use, see our{' '}
-        <Button as={Link} variant="link" to="/privacy">
+        <Button as={Link} variant="link" href="/privacy">
           privacy policy.
         </Button>
       </p>

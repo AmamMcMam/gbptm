@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import merge from 'lodash/merge';
 import cloneDeep from 'lodash/cloneDeep';
 import uniqBy from 'lodash/uniqBy';
@@ -188,7 +188,7 @@ const EditPage = (props) => {
 
               <Button
                 as={Link}
-                to={`/loos/${props.match.params.id}/remove`}
+                href={`/loos/${props.match.params.id}/remove`}
                 css={{
                   width: '100%',
                 }}

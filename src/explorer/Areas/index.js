@@ -1,7 +1,7 @@
 import React from 'react';
 import { useQuery } from '@apollo/client';
 import { loader } from 'graphql.macro';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 
 import get from 'lodash/get';
 
@@ -74,7 +74,7 @@ function Areas() {
                 ))}
 
                 <TableCell key={`link_${area.meta.name}`}>
-                  <Link to={`./search?areaName=${area.meta.name}`}>
+                  <Link href={`./search?areaName=${area.meta.name}`}>
                     view loos
                   </Link>
                 </TableCell>

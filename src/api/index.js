@@ -1,14 +1,12 @@
-const { ApolloServer, gql } = require('apollo-server');
+import { ApolloServer } from 'apollo-server-micro';
 const jwt = require('jsonwebtoken');
 const jwksClient = require('jwks-rsa');
 
-const config = require('./config');
+const settings = require('./config');
 
 const fs = require('fs');
 const path = require('path');
-const typeDefs = gql(
-  fs.readFileSync(path.join(__dirname, 'typeDefs.graphql'), 'utf-8')
-);
+import typeDefs from './typeDefs.graphql.js';
 
 const resolvers = require('./resolvers');
 const {
@@ -17,7 +15,7 @@ const {
 } = require('./directives');
 
 const client = jwksClient({
-  jwksUri: config.auth0.jwksUri,
+  jwksUri: settings.auth0.jwksUri,
 });
 
 const { connect } = require('./db');
@@ -31,9 +29,9 @@ function getKey(header, cb) {
 }
 
 const options = {
-  audience: config.auth0.audience,
-  issuer: config.auth0.issuer,
-  algorithms: config.auth0.algorithms,
+  audience: settings.auth0.audience,
+  issuer: settings.auth0.issuer,
+  algorithms: settings.auth0.algorithms,
 };
 
 // Add GraphQL API
@@ -63,9 +61,9 @@ const apollo = new ApolloServer({
       user,
     };
   },
-  engine: { ...config.graphql.engine },
-  playground: { ...config.graphql.playground },
+  engine: { ...settings.graphql.engine },
+  playground: { ...settings.graphql.playground },
   introspection: true,
 });
 
-module.exports = apollo;
+export default apollo;

@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 
 import Container from '../Container';
@@ -70,7 +70,7 @@ const TrackingBanner = React.forwardRef((props, ref) => {
                 <p>
                   For more detailed information about the cookies we use,{' '}
                   <Link
-                    to="/cookies"
+                    href="/cookies"
                     css={{
                       borderBottom: '1px solid',
                     }}
@@ -103,10 +103,12 @@ const TrackingBanner = React.forwardRef((props, ref) => {
                         name="ga"
                         type="checkbox"
                         defaultChecked={
-                          config.getSetting(
-                            TRACKING_STORAGE_KEY,
-                            'gaAccepted'
-                          ) || false
+                          (typeof window !== 'undefined' &&
+                            config.getSetting(
+                              TRACKING_STORAGE_KEY,
+                              'gaAccepted'
+                            )) ||
+                          false
                         }
                       />
                     </Box>
@@ -127,10 +129,12 @@ const TrackingBanner = React.forwardRef((props, ref) => {
                         name="aa"
                         type="checkbox"
                         defaultChecked={
-                          config.getSetting(
-                            TRACKING_STORAGE_KEY,
-                            'aaAccepted'
-                          ) || false
+                          (typeof window !== 'undefined' &&
+                            config.getSetting(
+                              TRACKING_STORAGE_KEY,
+                              'aaAccepted'
+                            )) ||
+                          false
                         }
                       />
                     </Box>

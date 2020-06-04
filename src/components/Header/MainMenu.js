@@ -1,13 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { NavLink } from 'react-router-dom';
+import Link from 'next/link';
 import styled from '@emotion/styled';
 
 import Box from '../Box';
 import Text from '../Text';
 import { Media } from '../Media';
 
-const StyledNavLink = styled(NavLink)`
+const StyledNavLink = styled(Link)`
   // active class is added by NavLink component
   &.active {
     color: ${(props) => props.theme.colors.tertiary};
@@ -36,13 +36,13 @@ const MainMenu = ({ mapCenter, children }) => (
         flexGrow={1}
       >
         <Box as="li" ml={[0, 4]}>
-          <StyledNavLink to="/" exact>
+          <StyledNavLink href="/" exact>
             Find Toilet
           </StyledNavLink>
         </Box>
         <Box as="li" mt={[3, 0]} ml={[0, 4]}>
           <StyledNavLink
-            to={
+            href={
               mapCenter
                 ? `/loos/add?lat=${mapCenter.lat}&lng=${mapCenter.lng}`
                 : `/loos/add`
@@ -53,13 +53,13 @@ const MainMenu = ({ mapCenter, children }) => (
         </Box>
 
         <Box as="li" mt={['auto', 0]} ml={[0, 'auto']}>
-          <StyledNavLink to="/about">About</StyledNavLink>
+          <StyledNavLink href="/about">About</StyledNavLink>
         </Box>
         <Box as="li" mt={[3, 0]} ml={[0, 4]}>
-          <StyledNavLink to="/use-our-loos">Our Sponsor</StyledNavLink>
+          <StyledNavLink href="/use-our-loos">Our Sponsor</StyledNavLink>
         </Box>
         <Box as="li" mt={[3, 0]} mb={['auto', 0]} ml={[0, 4]}>
-          <StyledNavLink to="/contact">Contact</StyledNavLink>
+          <StyledNavLink href="/contact">Contact</StyledNavLink>
         </Box>
       </Box>
 

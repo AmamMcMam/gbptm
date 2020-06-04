@@ -13,5 +13,5 @@ module.exports = {
   },
   Loo,
   Report,
-  Area
+  Area,
 };

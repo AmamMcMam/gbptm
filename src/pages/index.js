@@ -1,29 +1,37 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { useParams, useRouteMatch } from 'react-router-dom';
+// import { useParams, useRouteMatch } from 'react-router-dom';
+import { useRouter } from 'next/router';
 import queryString from 'query-string';
 import { Helmet } from 'react-helmet';
-import { loader } from 'graphql.macro';
+// import { loader } from 'graphql.macro';
 import { useQuery } from '@apollo/client';
+import { withApollo } from '../apollo';
 
 import PageLayout from '../components/PageLayout';
-import LooMap from '../components/LooMap';
+// import LooMap from '../components/LooMap';
 import useMapPosition from '../components/useMapPosition';
 import useNearbyLoos from '../components/useNearbyLoos';
 import Box from '../components/Box';
-import ToiletDetailsPanel from '../components/ToiletDetailsPanel';
+// import ToiletDetailsPanel from '../components/ToiletDetailsPanel';
 import Sidebar from '../components/Sidebar';
 import Notification from '../components/Notification';
 import VisuallyHidden from '../components/VisuallyHidden';
 
 import config, { FILTERS_KEY } from '../config';
 
-const FIND_BY_ID = loader('./findLooById.graphql');
+import FIND_LOO_BY_ID from './findLooById.graphql.js';
+
+import dynamic from 'next/dynamic';
+
+const LooMap = dynamic(() => import('../components/LooMap'), { ssr: false });
 
 const HomePage = ({ initialPosition, ...props }) => {
-  const [mapPosition, setMapPosition] = useMapPosition(config.fallbackLocation);
+  const [mapPosition, setMapPosition, mapPositionLoading] = useMapPosition(
+    config.fallbackLocation
+  );
 
-  let initialState = config.getSettings(FILTERS_KEY);
+  let initialState = {};
 
   // default any unsaved filters as 'false'
   config.filters.forEach((filter) => {
@@ -43,18 +51,24 @@ const HomePage = ({ initialPosition, ...props }) => {
       lng: mapPosition.center.lng,
       radius: Math.ceil(mapPosition.radius),
     },
+    skip: mapPositionLoading,
+    ssr: false,
   });
 
-  const selectedLooId = useParams().id;
+  const { query } = useRouter();
 
-  const { data, loading } = useQuery(FIND_BY_ID, {
+  const selectedLooId = query.id;
+
+  const { data, loading } = useQuery(FIND_LOO_BY_ID, {
     skip: !selectedLooId,
     variables: {
       id: selectedLooId,
     },
   });
 
-  const { message } = queryString.parse(props.location.search);
+  console.log(mapPositionLoading);
+
+  const { message } = query;
 
   // get the filter objects from config for the filters applied by the user
   const applied = config.filters.filter((filter) => filters[filter.id]);
@@ -72,7 +86,7 @@ const HomePage = ({ initialPosition, ...props }) => {
     })
   );
 
-  const isLooPage = useRouteMatch('/loos/:id');
+  const isLooPage = Boolean(selectedLooId);
 
   const [shouldCenter, setShouldCenter] = React.useState(isLooPage);
 
@@ -105,9 +119,9 @@ const HomePage = ({ initialPosition, ...props }) => {
 
   return (
     <PageLayout mapCenter={mapPosition.center}>
-      <Helmet>
+      {/* <Helmet>
         <title>{pageTitle}</title>
-      </Helmet>
+      </Helmet> */}
 
       <VisuallyHidden>
         <h1>{pageTitle}</h1>
@@ -128,30 +142,32 @@ const HomePage = ({ initialPosition, ...props }) => {
           // center on small viewports
           mx={['auto', 0]}
         >
-          <Sidebar
+          {/* <Sidebar
             filters={filters}
             onFilterChange={setFilters}
             onSelectedItemChange={(center) => setMapPosition({ center })}
             onUpdateMapPosition={setMapPosition}
             mapCenter={mapPosition.center}
-          />
+          /> */}
         </Box>
 
-        <LooMap
-          loos={toilets.map((toilet) => {
-            if (toilet.id === selectedLooId) {
-              return {
-                ...toilet,
-                isHighlighted: true,
-              };
-            }
-            return toilet;
-          })}
-          center={mapPosition.center}
-          zoom={mapPosition.zoom}
-          onViewportChanged={setMapPosition}
-          controlsOffset={toiletPanelDimensions.height}
-        />
+        {!mapPositionLoading && (
+          <LooMap
+            loos={toilets.map((toilet) => {
+              if (toilet.id === selectedLooId) {
+                return {
+                  ...toilet,
+                  isHighlighted: true,
+                };
+              }
+              return toilet;
+            })}
+            center={mapPosition.center}
+            zoom={mapPosition.zoom}
+            onViewportChanged={setMapPosition}
+            controlsOffset={toiletPanelDimensions.height}
+          />
+        )}
 
         {Boolean(selectedLooId) && data && (
           <Box
@@ -161,7 +177,7 @@ const HomePage = ({ initialPosition, ...props }) => {
             width="100%"
             zIndex={100}
           >
-            <ToiletDetailsPanel
+            {/* <ToiletDetailsPanel
               data={data.loo}
               isLoading={loading}
               startExpanded={!!message}
@@ -186,7 +202,7 @@ const HomePage = ({ initialPosition, ...props }) => {
                   />
                 </Box>
               )}
-            </ToiletDetailsPanel>
+            </ToiletDetailsPanel> */}
           </Box>
         )}
       </Box>
@@ -201,4 +217,4 @@ HomePage.propTypes = {
   }),
 };
 
-export default HomePage;
+export default withApollo({ ssr: true })(HomePage);
